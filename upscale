@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# upscaler for pictures
+# requires:
+# pip install waifu2x
+# and something else maybe (TODO)
+
+echo upscale_pic resolution engine input
+echo engines: realcugan, srmd, waifu2x, realsr
+echo upscale_pic 2560 waifu2x /mnt/uwu/pictures/a.png
+echo $1 $2 $3 $4
+inp=$3
+reso=$1
+mod=$2
+
+# ffmpeg -i $inp -preset ultrafast  /tmp/uconv_output.jpg
+# -preset ultrafast
+
+echo --------------------------------------
+nice -n 19 prime-run python -m video2x -i $inp -o /tmp/uconv_output.mp4 -p3 upscale -h $reso -a $mod
+
+ffmpeg -i /tmp/uconv_output.mp4 -vf fps=60 -frames:v 1 $inp.upped.png
+

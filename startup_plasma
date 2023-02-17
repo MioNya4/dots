@@ -1,0 +1,41 @@
+#!/bin/bash
+
+# autostart script
+
+xrandr --newmode "2240x1260_165.00"  718.75  2240 2440 2688 3136  1260 1263 1268 1390 -hsync +vsync
+xrandr --newmode "2240x1260_40.00"  152.00  2240 2360 2592 2944  1260 1263 1268 1292 -hsync +vsync
+xrandr --newmode "1920x1080_40.00"  110.50  1920 2016 2208 2496  1080 1083 1088 1108 -hsync +vsync
+xrandr --newmode "1920x1080_165.00"  525.00  1920 2088 2296 2672  1080 1083 1088 1192 -hsync +vsync
+
+xrandr --addmode eDP-1 "2240x1260_165.00"
+xrandr --addmode eDP-1 2240x1260_40.00
+xrandr --addmode eDP-1 "1920x1080_40.00"
+xrandr --addmode eDP-1 "1920x1080_165.00"
+# xrandr --output eDP-1 --mode 2240x1260_165.00
+
+# if [[ $SESSION_MIO != P ]]; then exit 0 ; fi
+sysctl vm.swappiness=1
+sysctl vm.vfs_cache_pressure=50
+sysctl vm.dirty_writeback_centisecs=15000
+sysctl vm.dirty_background_ratio=7
+sysctl vm.dirty_ratio=12
+
+# killall org_kde_powerdevil
+kstart5 /usr/lib64/libexec/org_kde_powerdevil
+
+# sysctl vm.overcommit_memory=2
+# sysctl vm.overcommit_kbytes=65536
+
+# sudo ln -s /etc/sv/bluetoothd/ /var/service/;
+# sudo sv up bluetoothd
+
+xhost +
+sleep 0.5 ; sxhkd -c /mnt/uwu/4C/zscripts/sxhkdrc.plasma &
+xbindkeys &
+klipper &
+xhost +
+
+
+yakuake &
+conky -q -c /mnt/uwu/4C/zscripts/conkyrc2 &
+sleep 3 ; rc-service bluetooth restart &

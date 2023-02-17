@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# decreases refresh rate and cpu freq
+# to save power
+# to be used with acpi event `on battery`
+
+xrandr --rate 40
+
+
+echo 0 > /sys/devices/system/cpu/intel_pstate/min_perf_pct
+echo 50 > /sys/devices/system/cpu/intel_pstate/max_perf_pct
+echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo
+
+echo 350 > /sys/class/drm/card0/gt_max_freq_mhz
+echo 350 > /sys/class/drm/card0/gt_min_freq_mhz
+echo 350 > /sys/class/drm/card0/gt_boost_freq_mhz

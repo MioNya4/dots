@@ -1,0 +1,10 @@
+# auto mount script for chrooting
+# TODO /dev/shm
+
+mount --bind /dev ./dev 
+mount --bind /proc ./proc
+mount --bind /sys ./sys
+mount --bind /run ./run
+mount --bind /mnt ./mnt
+cp /etc/resolv.conf ./etc/
+chroot ./ /bin/bash

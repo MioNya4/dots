@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# suspend script that avoids double sleep bug
+# https://bbs.archlinux.org/viewtopic.php?id=58129
+# and it also makes screen black insantly
+# so it looks like suspend is instant (its not :<)
+
+if [[ -f /tmp/sleep4 ]]; 
+    then       
+    sleep 1;        
+        if [[ -f /tmp/sleep4 ]]; 
+        then           
+            rm /tmp/sleep4;     
+        fi; 
+        else
+            CURRBR=$(cat /sys/class/backlight/intel_backlight/brightness)
+            echo 0 > /sys/class/backlight/intel_backlight/brightness 
+            echo 'apply' | ite8291r3-ctl anim
+            echo mem > /sys/power/state ;
+            echo $CURRBR > /sys/class/backlight/intel_backlight/brightness
+            cat /mnt/uwu/4C/zbin/ite.blue | ite8291r3-ctl anim
+
+            sleep 1;
+            rm /tmp/sleep4;
+fi
+# echo 0 > /sys/class/backlight/intel_backlight/brightness; echo mem > /sys/power/state ;

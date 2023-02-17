@@ -1,0 +1,85 @@
+#!/bin/sh
+
+# cpu and igc mode switcher
+# to be used in shell for easier switching
+# and in scripts
+
+level=$1
+
+#1  800-800     350-350     t0
+#2  800-1600    350-350     t0
+#3  800-2300    350-350     t0
+#4  800-4600    350-350     t1
+#5  2300-4600   350-1450    t1
+#6  4600-4600   350-350     t1
+
+case "$level" in
+
+ "1" )
+ echo 350 > /sys/class/drm/card0/gt_min_freq_mhz
+ echo 350 > /sys/class/drm/card0/gt_max_freq_mhz
+ echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo
+ echo 0 > /sys/devices/system/cpu/intel_pstate/min_perf_pct
+ echo 0 > /sys/devices/system/cpu/intel_pstate/max_perf_pct
+ ;;
+
+ "2" )
+ echo 350 > /sys/class/drm/card0/gt_min_freq_mhz
+ echo 350 > /sys/class/drm/card0/gt_max_freq_mhz
+ echo 350 > /sys/class/drm/card0/gt_boost_freq_mhz
+ echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo
+ echo 0 > /sys/devices/system/cpu/intel_pstate/min_perf_pct
+ echo 25 > /sys/devices/system/cpu/intel_pstate/max_perf_pct
+ ;;
+ 
+ "3" )
+ echo 350 > /sys/class/drm/card0/gt_min_freq_mhz
+ echo 350 > /sys/class/drm/card0/gt_max_freq_mhz
+ echo 350 > /sys/class/drm/card0/gt_boost_freq_mhz
+ echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo
+ echo 0 > /sys/devices/system/cpu/intel_pstate/min_perf_pct
+ echo 50 > /sys/devices/system/cpu/intel_pstate/max_perf_pct
+ ;;
+ 
+ "4" )
+ echo 350 > /sys/class/drm/card0/gt_min_freq_mhz
+ echo 350 > /sys/class/drm/card0/gt_max_freq_mhz
+ echo 350 > /sys/class/drm/card0/gt_boost_freq_mhz
+ echo 0 > /sys/devices/system/cpu/intel_pstate/no_turbo
+ echo 0 > /sys/devices/system/cpu/intel_pstate/min_perf_pct
+ echo 75 > /sys/devices/system/cpu/intel_pstate/max_perf_pct
+ ;;
+ 
+ "5" )
+ echo 350 > /sys/class/drm/card0/gt_min_freq_mhz
+ echo 1450 > /sys/class/drm/card0/gt_max_freq_mhz
+ echo 1450 > /sys/class/drm/card0/gt_boost_freq_mhz
+ echo 0 > /sys/devices/system/cpu/intel_pstate/no_turbo
+ echo 50 > /sys/devices/system/cpu/intel_pstate/min_perf_pct
+ echo 75 > /sys/devices/system/cpu/intel_pstate/max_perf_pct
+ ;;
+ 
+ "6" )
+ echo 350 > /sys/class/drm/card0/gt_min_freq_mhz
+ echo 350 > /sys/class/drm/card0/gt_max_freq_mhz
+ echo 350 > /sys/class/drm/card0/gt_boost_freq_mhz
+ echo 0 > /sys/devices/system/cpu/intel_pstate/no_turbo
+ echo 100 > /sys/devices/system/cpu/intel_pstate/min_perf_pct
+ echo 100 > /sys/devices/system/cpu/intel_pstate/max_perf_pct
+ ;;
+ 
+ "inc" )
+ level=$(cat /tmp/lamcpu)
+ /mnt/uwu/4C/zbin/lamcpu $(($level + 1))
+ level=$(($level + 1))
+ ;;
+ 
+ "dec" )
+ level=$(cat /tmp/lamcpu)
+ /mnt/uwu/4C/zbin/lamcpu $(($level - 1))
+ level=$(($level - 1))
+ ;;
+ 
+esac
+
+echo $level > /tmp/lamcpu

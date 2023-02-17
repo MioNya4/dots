@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# sets screen refresh rate and cpu mode
+# to be used on acpi event `power plug in`
+
+xrandr --rate 165
+
+echo 25 > /sys/devices/system/cpu/intel_pstate/min_perf_pct
+echo 75 > /sys/devices/system/cpu/intel_pstate/max_perf_pct
+echo 0 > /sys/devices/system/cpu/intel_pstate/no_turbo
+
+echo 1450 > /sys/class/drm/card0/gt_max_freq_mhz
+echo 350 > /sys/class/drm/card0/gt_min_freq_mhz
+echo 1450 > /sys/class/drm/card0/gt_boost_freq_mhz
