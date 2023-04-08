@@ -1,3 +1,0 @@
-# brightness increase command for those who dont have lxqt-backlight_backend
-
-BR=$(cat /sys/class/backlight/intel_backlight/brightness) ; BR=$(($BR+10000)) ; echo $BR > /sys/class/backlight/intel_backlight/brightness 
