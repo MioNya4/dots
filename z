@@ -1,0 +1,96 @@
+#!/usr/bin/python3
+
+DEBUG = 1
+
+# emerge frontend for managing dephell i have and quickly switching between different ebuilds tree snapshots to install older versions
+# totally useless for regular user, won't work
+import sys
+import os
+
+prefix_job = ""
+emerge_cmd = ""
+packages = ""
+eflag = 0
+zflag = 0
+
+# # todo: icc, equery features, layman
+# alias zu='equery uses'
+
+
+for a in sys.argv[1:]:
+    if '24' == a:
+        prefix_job = "rm /var/db/repos/gentoo ; ln -s /var/db/repos/gentoo_24/ /var/db/repos/gentoo  "
+        zflag =+ 1
+    elif '26' == a or 'pla' == a or 'p' == a:
+        prefix_job = "rm /var/db/repos/gentoo ; ln -s /var/db/repos/gentoo_pla/ /var/db/repos/gentoo  "
+        zflag =+ 1
+    elif 'L' == a or 'l' == a or '27' == a:
+        prefix_job = "rm /var/db/repos/gentoo ; ln -s /var/db/repos/gentoo_L/ /var/db/repos/gentoo  "
+        zflag =+ 1
+    elif 'u' == a:
+        emerge_cmd = " equery uses "
+        zflag += 1
+
+
+    elif a == 'icc':
+        prefix_job += """export OCC="/opt/intel/oneapi/compiler/2023.0.0/linux/bin/icx"
+export OCXX="/opt/intel/oneapi/compiler/2023.0.0/linux/bin/icpx"
+export CFLAGS="-O2 -mcpu=skylake"
+export CXXFLAGS="-O2 -march=skylake"
+export CC="clang"
+export CXX="clang++" """
+
+
+
+    elif 's' == a:
+        emerge_cmd = "emerge --search "
+        zflag =+ 1
+    elif 'S' == a:
+        emerge_cmd = "emerge --searchdesc "
+        zflag =+ 1
+
+    elif 'p' == a:
+        emerge_cmd += ' -p '
+        eflag += 1
+    elif 'i' == a:
+        eflag += 1
+    elif 'O' == a:
+        emerge_cmd += " -O "
+        eflag += 1
+    elif 'C' == a:
+        emerge_cmd += " -C "
+        eflag += 1
+    elif 'cr' == a or 'CR' == a or 'Cr' == a:
+        emerge_cmd += " --depclean "
+        eflag += 1
+    elif 'upd' == a:
+        emerge_cmd += ' --deep --update --newuse '
+        eflag += 1
+    elif a == 'e1':
+        emerge_cmd += " --exclude=llvm --exclude=rust --exclude=gcc --exclude=qtwebengine --exclude=nodejs "
+        eflag += 1
+    elif a == 'e2':
+        emerge_cmd += " --exclude=llvm --exclude=rust --exclude=gcc --exclude=qtwebengine --exclude=nodejs --exclude=kde-frameworks/*"
+
+
+    elif 'qt.5' == a:
+        packages += " =dev-qt/designer-5.15.5::gentoo =dev-qt/linguist-tools-5.15.5::gentoo =dev-qt/qdbus-5.15.5::gentoo =dev-qt/qdoc-5.15.5::gentoo =dev-qt/qt-creator-8.0.2::gentoo =dev-qt/qtchooser-66-r2::gentoo =dev-qt/qtconcurrent-5.15.5-r1::gentoo =dev-qt/qtcore-5.15.5-r3::gentoo =dev-qt/qtdbus-5.15.5-r1::gentoo =dev-qt/qtdeclarative-5.15.5::gentoo =dev-qt/qtgraphicaleffects-5.15.5::gentoo =dev-qt/qtgui-5.15.5-r2::gentoo =dev-qt/qthelp-5.15.5::gentoo =dev-qt/qtimageformats-5.15.5-r2::gentoo =dev-qt/qtlockedfile-2.4.1_p20171024::gentoo =dev-qt/qtmultimedia-5.15.5-r1::gentoo =dev-qt/qtnetwork-5.15.5::gentoo =dev-qt/qtopengl-5.15.5::gentoo =dev-qt/qtpaths-5.15.5::gentoo =dev-qt/qtprintsupport-5.15.5-r1::gentoo =dev-qt/qtquickcontrols-5.15.5::gentoo =dev-qt/qtquickcontrolemerge_cmd-5.15.5-r1::gentoo =dev-qt/qtquicktimeline-5.15.5::gentoo =dev-qt/qtscript-5.15.5::gentoo =dev-qt/qtsensors-5.15.5::gentoo =dev-qt/qtserialport-5.15.5::gentoo =dev-qt/qtsingleapplication-2.6.1_p20171024::gentoo =dev-qt/qtsql-5.15.5::gentoo =dev-qt/qtsvg-5.15.5-r1::gentoo =dev-qt/qttest-5.15.5::gentoo =dev-qt/qttranslations-5.15.5::gentoo =dev-qt/qtvirtualkeyboard-5.15.5::gentoo =dev-qt/qtwayland-5.15.5-r1::gentoo =dev-qt/qtwaylandscanner-5.15.5::gentoo =dev-qt/qtwebchannel-5.15.5::gentoo  =dev-qt/qtwebsockets-5.15.5::gentoo =dev-qt/qtwidgets-5.15.5-r1::gentoo =dev-qt/qtx11extras-5.15.5::gentoo =dev-qt/qtxml-5.15.5::gentoo =dev-qt/qtxmlpatterns-5.15.5::gentoo "
+        eflag += 1
+    elif 'kf' == a:
+        packages += " =kde-frameworks/attica-5.100.0::gentoo =kde-frameworks/baloo-5.100.0::gentoo =kde-frameworks/bluez-qt-5.100.0::gentoo =kde-frameworks/breeze-icons-5.100.0::gentoo =kde-frameworks/breeze-icons-rcc-5.100.0::gentoo =kde-frameworks/countryflags-5.100.0::gentoo =kde-frameworks/extra-cmake-modules-5.100.0::gentoo =kde-frameworks/frameworkintegration-5.100.0::gentoo =kde-frameworks/kactivities-5.100.0::gentoo =kde-frameworks/kactivities-stats-5.100.0::gentoo =kde-frameworks/kapidox-5.100.0::gentoo =kde-frameworks/karchive-5.100.0::gentoo =kde-frameworks/kauth-5.100.0::gentoo =kde-frameworks/kbookmarks-5.100.0::gentoo =kde-frameworks/kcalendarcore-5.100.0::gentoo =kde-frameworks/kcmutils-5.100.0::gentoo =kde-frameworks/kcodecs-5.100.0::gentoo =kde-frameworks/kcompletion-5.100.0::gentoo =kde-frameworks/kconfig-5.100.0::gentoo =kde-frameworks/kconfigwidgets-5.100.0::gentoo =kde-frameworks/kcontacts-5.100.0::gentoo =kde-frameworks/kcoreaddons-5.100.0::gentoo =kde-frameworks/kcrash-5.100.0::gentoo =kde-frameworks/kdav-5.100.0::gentoo =kde-frameworks/kdbusaddons-5.100.0::gentoo =kde-frameworks/kdeclarative-5.100.0::gentoo =kde-frameworks/kded-5.100.0::gentoo =kde-frameworks/kdelibs4support-5.100.0::gentoo =kde-frameworks/kdesu-5.100.0::gentoo =kde-frameworks/kdnssd-5.100.0::gentoo =kde-frameworks/kdoctools-5.100.0::gentoo =kde-frameworks/kemoticons-5.100.0::gentoo =kde-frameworks/kf-env-5::gentoo =kde-frameworks/kfilemetadata-5.100.0::gentoo =kde-frameworks/kglobalaccel-5.100.0::gentoo =kde-frameworks/kguiaddons-5.100.0::gentoo =kde-frameworks/kholidays-5.100.0::gentoo =kde-frameworks/khtml-5.100.0::gentoo =kde-frameworks/ki18n-5.100.0::gentoo =kde-frameworks/kiconthemes-5.100.0::gentoo =kde-frameworks/kidletime-5.100.0::gentoo =kde-frameworks/kimageformats-5.100.0::gentoo =kde-frameworks/kinit-5.100.0::gentoo =kde-frameworks/kio-5.100.0::gentoo =kde-frameworks/kirigami-5.100.0::gentoo =kde-frameworks/kitemmodels-5.100.0::gentoo =kde-frameworks/kitemviews-5.100.0::gentoo =kde-frameworks/kjobwidgets-5.100.0::gentoo =kde-frameworks/kjs-5.100.0::gentoo =kde-frameworks/knewstuff-5.100.0::gentoo =kde-frameworks/knotifications-5.100.0::gentoo =kde-frameworks/knotifyconfig-5.100.0::gentoo =kde-frameworks/kpackage-5.100.0::gentoo =kde-frameworks/kparts-5.100.0::gentoo =kde-frameworks/kpeople-5.100.0::gentoo =kde-frameworks/kplotting-5.100.0::gentoo =kde-frameworks/kpty-5.100.0::gentoo =kde-frameworks/kquickcharts-5.100.0::gentoo =kde-frameworks/krunner-5.100.0::gentoo =kde-frameworks/kservice-5.100.0::gentoo =kde-frameworks/ktexteditor-5.100.0::gentoo =kde-frameworks/ktextwidgets-5.100.0::gentoo =kde-frameworks/kunitconversion-5.100.0::gentoo =kde-frameworks/kwallet-5.100.0::gentoo =kde-frameworks/kwayland-5.100.0::gentoo =kde-frameworks/kwidgetsaddons-5.100.0::gentoo =kde-frameworks/kwindowsystem-5.100.0-r1::gentoo =kde-frameworks/kxmlgui-5.100.0::gentoo =kde-frameworks/modemmanager-qt-5.100.0::gentoo =kde-frameworks/networkmanager-qt-5.100.0::gentoo =kde-frameworks/oxygen-icons-5.100.0::gentoo =kde-frameworks/plasma-5.100.0-r1::gentoo =kde-frameworks/prison-5.100.0::gentoo =kde-frameworks/purpose-5.100.0::gentoo =kde-frameworks/qqc2-desktop-style-5.100.0::gentoo =kde-frameworks/solid-5.100.0::gentoo =kde-frameworks/sonnet-5.100.0::gentoo =kde-frameworks/syndication-5.100.0::gentoo =kde-frameworks/syntax-highlighting-5.100.0::gentoo =kde-frameworks/threadweaver-5.100.0::gentoo "
+        eflag += 1
+    else:
+        packages += (' ' + a + ' ')
+
+if eflag or not zflag:
+    emerge_cmd = "emerge -avq " + emerge_cmd
+if prefix_job != '':
+    prefix_job += " ; "
+
+s = prefix_job + emerge_cmd + packages
+if DEBUG:
+    print(s)
+    if input("execute? y/n ") != 'n':
+        os.system("sh -c \" " + s + " \"")
+else:
+    os.system(s)
