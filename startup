@@ -1,0 +1,77 @@
+#!/bin/bash
+
+# autostart script
+
+xrandr --newmode "2240x1260_165.00"  718.75  2240 2440 2688 3136  1260 1263 1268 1390 -hsync +vsync
+xrandr --newmode "2240x1260_40.00"  152.00  2240 2360 2592 2944  1260 1263 1268 1292 -hsync +vsync
+xrandr --newmode "1920x1080_40.00"  110.50  1920 2016 2208 2496  1080 1083 1088 1108 -hsync +vsync
+xrandr --newmode "1920x1080_165.00"  525.00  1920 2088 2296 2672  1080 1083 1088 1192 -hsync +vsync
+
+xrandr --addmode eDP1 "2240x1260_165.00"
+xrandr --addmode eDP1 2240x1260_40.00
+xrandr --addmode eDP1 "1920x1080_40.00"
+xrandr --addmode eDP1 "1920x1080_165.00"
+# xrandr --output eDP1 --mode 1920x1080_165.00
+xrandr --output eDP1 --mode 2240x1260_165.00
+
+sysctl vm.swappiness=1
+sysctl vm.vfs_cache_pressure=50
+sysctl vm.dirty_writeback_centisecs=500
+sysctl vm.dirty_background_ratio=7
+sysctl vm.dirty_ratio=12
+rc-service bluetooth restart
+
+if [[ $SESSION_MIO == P ]]
+then
+    # killall org_kde_powerdevil
+    kstart5 /usr/lib64/libexec/org_kde_powerdevil
+    sleep 0.5
+    sxhkd -c /root/.config/sxhkd/psxhkdrc &
+    xbindkeys &
+    klipper &
+    xhost +
+
+
+    yakuake &
+    conky -q -c /mnt/uwu/4C/zscripts/conkyrc2 &
+    sleep 3 ; rc-service bluetooth restart &
+    dolphin &
+    dolphin &
+fi
+
+if [[ $SESSION_MIO == L ]]
+then
+    xhost +
+    sxhkd -c /root/.config/sxhkd/lsxhkdrc &
+    klipper &
+    xrdb -load ~/.Xresources
+    xhost +
+    conky -q -c /mnt/uwu/4C/zscripts/conkyrc22 &
+
+
+    # Set decoration geometry
+    berryc border_width       2
+    berryc inner_border_width 0
+    berryc title_height       0
+    berryc top_gap            0
+    # Set decoration colors
+    berryc focus_color         00FFFF
+    berryc unfocus_color       00CCCC
+    berryc inner_focus_color   00FF00
+    berryc inner_unfocus_color 0000FF
+    berryc text_focus_color    ffffff
+    berryc text_unfocus_color  eeeeee
+    # Other options
+    berryc edge_gap 32 0 0 0
+    berryc smart_place "true"
+    berryc draw_text   "true"
+    berryc edge_lock   "true"
+    berryc set_font    "Dina-9"
+
+    dolphin &
+    dolphin &
+    sleep 2
+    sh /root/.config/polybar/blocks/launch.sh
+
+
+fi
