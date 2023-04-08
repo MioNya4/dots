@@ -1,0 +1,46 @@
+#!/bin/sh
+
+# turns on/off Nvidia graphics and loads driver
+# install nvidia driver from repos
+# and bbswitch (or bbswitch-dkms)
+
+
+for i in $1 $2 $3 $4 $5
+do
+if [[ $i == 'on' ]]
+then
+    echo ON > /proc/acpi/bbswitch
+    # sh /mnt/uwu/4C/zbin/ite | ite8291r3-ctl anim
+    #cat /mnt/uwu/4C/zbin/ite/ite.nvidia.on | ite8291r3-ctl anim
+    modprobe nvidia
+    modprobe nvidia_modeset
+    # modprobe nvidia_drm modeset=1
+    modprobe nvidia_drm
+    modprobe nvidia_uvm
+    # nvidia-settings --assign CurrentMetaMode="nvidia-auto-select +0+0 { ForceFullCompositionPipeline = On }"
+    if [[ "$(cat /proc/acpi/bbswitch | cut -c 15)" == 'N' ]]
+    then
+        #cat /mnt/uwu/4C/zbin/ite/ite.nvidia.break | ite8291r3-ctl anim
+        qdbus org.kde.plasmashell /org/kde/osdService org.kde.osdService.showText 'nvidia' 'enabled ON' || notify-send --icon=nvidia --app-name=nvidia "started"
+    else
+        qdbus org.kde.plasmashell /org/kde/osdService org.kde.osdService.showText 'nvidia' 'FAILED' || notify-send --icon=nvidia --app-name=nvidia "FAILED"
+    fi
+elif [[ $i == 'off' ]]
+then
+    #cat /mnt/uwu/4C/zbin/ite/ite.nvidia.off | ite8291r3-ctl anim
+    modprobe bbswitch
+    rmmod nvidia_uvm
+    rmmod nvidia_drm
+    rmmod nvidia_modeset
+    rmmod nvidia
+    rmmod nouveau
+    echo OFF > /proc/acpi/bbswitch
+    if [[ "$(cat /proc/acpi/bbswitch | cut -c 15)" == 'F' ]]
+    then
+        #cat /mnt/uwu/4C/zbin/ite/ite.nvidia.break | ite8291r3-ctl anim
+        qdbus org.kde.plasmashell /org/kde/osdService org.kde.osdService.showText 'nvidia' 'disabled OFF' || notify-send --icon=nvidia --app-name=nvidia "stopped"
+    else
+        qdbus org.kde.plasmashell /org/kde/osdService org.kde.osdService.showText 'nvidia' 'FAILED' || notify-send --icon=nvidia --app-name=nvidia "FAILED"
+    fi
+fi
+done
