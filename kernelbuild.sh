@@ -20,7 +20,7 @@ do
 	sleep 1
 done
 echo " \n "
-nice -n 19 ionice -c 3 make -j 17
+nice -n 19 ionice -c 3 make -j$(nproc)
 # todo : get number of cpu cores at runtime
 make install
 make modules_install
